@@ -50,7 +50,7 @@ public class GameBoard extends Model{
 		tessellator.draw();
 	}
 	
-	float ts = 16/256f;
+	float ts = .0625f;
 	public void addBoxWithTextureId(Tessellator tess, int x, int y, int id){
 		float tex = ts*(id%16);
 		float tey = ts*(id/16);

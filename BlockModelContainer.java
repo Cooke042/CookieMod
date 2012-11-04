@@ -51,27 +51,26 @@ import cpw.mods.fml.common.Side;
 import cpw.mods.fml.common.asm.SideOnly;
 import cpw.mods.fml.common.registry.GameRegistry;
 
-public class BlockModelContainer extends BlockContainer{
+public class BlockModelContainer extends BlockContainer {
 	public static Class tileEnt;
 
-	protected BlockModelContainer(int par1, int par2)
-	{
+	protected BlockModelContainer(int par1, int par2) {
 		super(par1, 7, Material.rock);
-		
 		tileEnt = GameMachineTile.class;
 	}
-	
+
 	@Override
 	public String getTextureFile() {
 		return CommonProxy.BLOCK_PNG;
 	}
-	
+
 	@Override
-	public void addCollidingBlockToList(World world, int x, int y, int z, AxisAlignedBB aabb, List list, Entity entitiy) {
-				
+	public void addCollidingBlockToList(World world, int x, int y, int z,
+			AxisAlignedBB aabb, List list, Entity entitiy) {
+
 		super.addCollidingBlockToList(world, x, y, z, aabb, list, entitiy);
 	}
-	
+
 	/**
 	 * Returns a new instance of a block's tile entity class. Called on placing
 	 * the block.
@@ -80,34 +79,39 @@ public class BlockModelContainer extends BlockContainer{
 	public TileEntity createNewTileEntity(World world) {
 		return new GameMachineTile();
 	}
-	
+
 	@Override
-	public void onBlockPlacedBy(World world, int x, int y, int z, EntityLiving player) {
-		
-		int meta = (MathHelper.floor_double((double) (player.rotationYaw * 4.0F / 360.0F) + 0.5D)) % 4;
-		GameMachineTile tt = (GameMachineTile) world.getBlockTileEntity(x, y, z);
+	public void onBlockPlacedBy(World world, int x, int y, int z,
+			EntityLiving player) {
+
+		int meta = (MathHelper
+				.floor_double((double) (player.rotationYaw * 4.0F / 360.0F) + 0.5D)) % 4;
+		GameMachineTile tt = (GameMachineTile) world
+				.getBlockTileEntity(x, y, z);
 		tt.facingDir = meta;
 		tt.modelid = 0;
 		setBlockBounds(0f, 0f, .2f, 1f, .7f, .8f);
 	}
 
 	@Override
-	public void onBlockClicked(World world, int x, int y, int z, EntityPlayer player) {
+	public void onBlockClicked(World world, int x, int y, int z,
+			EntityPlayer player) {
 		return;
 	}
-	
-	@Override
-	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int par6, float par7, float par8, float par9) {
 
-		GameMachineTile tt = (GameMachineTile) world.getBlockTileEntity(x, y, z);
+	@Override
+	public boolean onBlockActivated(World world, int x, int y, int z,
+			EntityPlayer player, int par6, float par7, float par8, float par9) {
+
+		GameMachineTile tt = (GameMachineTile) world
+				.getBlockTileEntity(x, y, z);
 		WorldInfo wi = world.getWorldInfo();
 		Model ttmodel = Model.models.get(tt.modelid);
-		
-		
+
 		if (player.isSneaking()) {
 			tt.drawWire = !tt.drawWire;
 		} else {
-						
+
 			wi.setRaining(false);
 			world.setWorldTime(1000);
 		}
@@ -117,18 +121,16 @@ public class BlockModelContainer extends BlockContainer{
 	/**
 	 * Returns the ID of the items to drop on destruction.
 	 */
-	public int idDropped(int par1, Random par2Random, int par3)
-	{
+	public int idDropped(int par1, Random par2Random, int par3) {
 		return blockID;
 	}
 
 	@ForgeSubscribe
-	public void drawingHighlight(DrawBlockHighlightEvent event){
+	public void drawingHighlight(DrawBlockHighlightEvent event) {
 		MovingObjectPosition mop = event.target;
 		World world = event.context.theWorld;
-		if (world.getBlockId(mop.blockX, mop.blockY, mop.blockZ) == this.blockID){
+		if (world.getBlockId(mop.blockX, mop.blockY, mop.blockZ) == this.blockID) {
 			glPolygonMode(GL11.GL_FRONT, GL11.GL_LINE);
-			GameMachineTile tt = (GameMachineTile)world.getBlockTileEntity(mop.blockX, mop.blockY, mop.blockZ);
 
 			GL11.glPopMatrix();
 			GL11.glPopMatrix();
@@ -142,7 +144,7 @@ public class BlockModelContainer extends BlockContainer{
 			event.setCanceled(true);
 		}
 	}
-	
+
 	@Override
 	public boolean renderAsNormalBlock() {
 		return false;
@@ -158,8 +160,7 @@ public class BlockModelContainer extends BlockContainer{
 	 * or not to render the shared face of two adjacent blocks and also whether
 	 * the player can attach torches, redstone wire, etc to this block.
 	 */
-	public boolean isOpaqueCube()
-	{
+	public boolean isOpaqueCube() {
 		return false;
 	}
 
