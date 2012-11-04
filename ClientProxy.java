@@ -1,0 +1,22 @@
+package cookieMod;
+
+import cpw.mods.fml.client.registry.ClientRegistry;
+import cpw.mods.fml.client.registry.RenderingRegistry;
+import cpw.mods.fml.common.registry.GameRegistry;
+import net.minecraftforge.client.MinecraftForgeClient;
+
+public class ClientProxy extends CommonProxy {
+	
+	
+	//client stuff?
+	@Override
+	public void registerRenderers() {
+		 // Or 'this' if your proxy happens to be the one that implements the block render interface.
+	     // This variable renderId? this thing has got to be static somewhere. not necessarily public, but we need it available form everywhere. at the minimum we need public accessors. I personally have this variable as a public int in my common @mod class.
+		
+		ClientRegistry.registerTileEntity(GameMachineTile.class, "TestingTile", new GameTileRenderer());
+
+		MinecraftForgeClient.preloadTexture(ITEMS_PNG);
+		MinecraftForgeClient.preloadTexture(BLOCK_PNG);
+	}
+}
