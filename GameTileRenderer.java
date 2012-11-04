@@ -71,6 +71,9 @@ public class GameTileRenderer extends TileEntitySpecialRenderer {
 		
 		//---Draw Screen---
 		glPushMatrix();
+		if (testTv.) {
+			
+		}
 		glTranslatef(testTv.screenX, testTv.screenY, testTv.screenZ);		
 		gb.drawArray(tessellator);
 		glPopMatrix();

@@ -103,8 +103,7 @@ public class BlockModelContainer extends BlockContainer {
 	public boolean onBlockActivated(World world, int x, int y, int z,
 			EntityPlayer player, int par6, float par7, float par8, float par9) {
 
-		GameMachineTile tt = (GameMachineTile) world
-				.getBlockTileEntity(x, y, z);
+		GameMachineTile tt = (GameMachineTile) world.getBlockTileEntity(x, y, z);
 		WorldInfo wi = world.getWorldInfo();
 		Model ttmodel = Model.models.get(tt.modelid);
 
@@ -128,20 +127,16 @@ public class BlockModelContainer extends BlockContainer {
 	@ForgeSubscribe
 	public void drawingHighlight(DrawBlockHighlightEvent event) {
 		MovingObjectPosition mop = event.target;
+		System.out.println(mop.hitVec.toString());
 		World world = event.context.theWorld;
 		if (world.getBlockId(mop.blockX, mop.blockY, mop.blockZ) == this.blockID) {
-			glPolygonMode(GL11.GL_FRONT, GL11.GL_LINE);
+			
+			glColor3f(0, 0, 0);			
+			//Model.drawModelById(tt.modelid, Tessellator.instance);
+			
 
-			GL11.glPopMatrix();
-			GL11.glPopMatrix();
-
-			glColor3f(0, 0, 0);
-			Model.drawModelById(tt.modelid, Tessellator.instance);
-
-			GL11.glPushMatrix();
-			GL11.glPushMatrix();
 			glPolygonMode(GL11.GL_FRONT, GL11.GL_FILL);
-			event.setCanceled(true);
+			event.setCanceled(false);
 		}
 	}
 

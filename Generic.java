@@ -63,7 +63,7 @@ public class Generic{
 	
 		
 	// Says where the client and server 'proxy' code is loaded.
-	@SidedProxy(clientSide="Generic.ClientProxy", serverSide="Generic.CommonProxy")
+	@SidedProxy(clientSide="cookieMod.ClientProxy", serverSide="cookieMod.CommonProxy")
 	public static CommonProxy proxy;
 	
 	@PreInit

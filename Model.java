@@ -31,21 +31,26 @@ public class Model {
 	private int id;
 	
 	String texture;
-	ArrayList<Vertex> verts;
+	ArrayList<Vertexd> verts;
 	ArrayList<Face> faces;
 	ArrayList<Uv> uvs;
-	ArrayList<Vertex> normals;
+	ArrayList<Vertexd> normals;
 
+	public boolean hasScreen = false;
 	public float screenX;
 	public float screenY;
 	public float screenZ;
 	
 	public Model() {
-		this.name = "unloaded";
-		verts = new ArrayList<Vertex>();
+		this("unNamed");
+	}
+	
+	public Model(String name) {
+		this.name = name;
+		verts = new ArrayList<Vertexd>();
 		uvs = new ArrayList<Uv>();
 		faces = new ArrayList<Face>();
-		normals = new ArrayList<Vertex>();
+		normals = new ArrayList<Vertexd>();
 	}
 
 	public static void drawModelById(int id, Tessellator tessellator){
@@ -61,12 +66,12 @@ public class Model {
 				tessellator.startDrawingQuads();
 			else
 				tessellator.startDrawing(GL11.GL_TRIANGLES);
-			Vertex normal = normals.get(face.vertexId[1].c).nomalize(); //get normal from vertdata and normalize
+			Vertexd normal = normals.get(face.vertexId[1].c).nomalize(); //get normal from vertdata and normalize
 			tessellator.setNormal((float) normal.x, (float) normal.y, (float) normal.z); //set normal for following quad
 						
 			for (int v = 0; v < face.num; v++) {  //iterate over face verticals
 				Uv uvdata = uvs.get(faces.get(f).vertexId[v].b);				
-				Vertex vertdata = verts.get(faces.get(f).vertexId[v].a);
+				Vertexd vertdata = verts.get(faces.get(f).vertexId[v].a);
 				
 				tessellator.addVertexWithUV(vertdata.x, vertdata.y, vertdata.z,	uvdata.u,-uvdata.v); // v
 			}
@@ -78,8 +83,21 @@ public class Model {
 
 	
 	// -------
-	//this does quite a few different things
-	
+	// this does quite a few different things
+	// gets the model file, stores texture location
+	// reads the file line by line, and checking the leading characters
+	// if there is a line what starts with g screen, it has found an object named screen in the 3d file. 
+	//		these will not be added to the faces array instead it will store 
+	//		the positions in the screen position variables and flag the model for having a display set up
+	// tag ref:
+	// # - comment
+	// g <name>- new object follows this line
+	// v - vertex coordinate x,y,z
+	// vn - vertex normal vector x,y,z
+	// vt - texture coordinae u,v
+	// f - face data, this stores the id's that define each vertex of the face
+	//     formated:"f vID/vtID/vnID vID/vtID/vnID vID/vtID/vnID [vID/vtID/vnID]" 3 for a tri face, 4 for a quad
+	//     note: the IDs in the obj file are base 1, not 0 like the arrays they are stored in
 	// ----------------------------------------------
 	public static Model LoadModelFromFile(String fileName, String texture) {
 
@@ -96,14 +114,15 @@ public class Model {
 				//String[] fileString = file.getName()//.split("/"); //splits the file string
 				model.name = file.getName();//fileString[fileString.length - 1];
 				model.texture = texture;
-
-				System.out.println(model.name);
 				
-				String line;
+				String line; // holder for each line as it iterates over the file;
 
 				boolean screenFaces = false;
 				
 				while ((line = br.readLine()) != null) {			
+					if (line.startsWith("#"))
+						continue;
+					
 					//if it's a screen face we dont want to draw it but to get position/size data from it;
 					if (line.startsWith("g screen")){
 						System.out.println("found face");
@@ -111,8 +130,6 @@ public class Model {
 					}else if (!line.startsWith("f"))
 						screenFaces = false;
 					
-					if (line.startsWith("#"))
-						continue;
 					if (line.startsWith("v ")) { // --------vertex coordinate 
 						float x, y, z;
 						line = line.substring(3);
@@ -121,7 +138,8 @@ public class Model {
 						y = Float.valueOf(s[1]).floatValue()/16f;
 						z = Float.valueOf(s[2]).floatValue()/16f;
 						// System.out.println("v = " + x + ", " + y + ", " + z);
-						model.verts.add(new Vertex(x, y, z));
+						model.verts.add(new Vertexd(x, y, z));
+						
 					} else if (line.startsWith("vn ")) { // ----------vertex
 															// normal
 						float x, y, z;
@@ -131,27 +149,28 @@ public class Model {
 						y = Float.valueOf(s[1]).floatValue();
 						z = Float.valueOf(s[2]).floatValue();
 						// System.out.println(x + ", " + y + ", " + z);
-						model.normals.add(new Vertex(x, y, z));
-					} else if (line.startsWith("vt ")) { // -------texture
-															// coordinate
+						model.normals.add(new Vertexd(x, y, z));
+						
+					} else if (line.startsWith("vt ")) { // -------texture coordinate
 						float u, v;
 						line = line.substring(3);
 						String[] s = line.split(" ");
 						u = Float.valueOf(s[0]);
 						v = Float.valueOf(s[1]);
 						// System.out.println(u + ", " + v);
-						model.uvs.add(new Uv(u, v));						
+						model.uvs.add(new Uv(u, v));	
+						
 					} else if (line.startsWith("f ")) { // face declaration if all requirements met. 4 verts and 3 id per face
 	
 						int i = 0;
-						
 						line = line.substring(2);
 						//System.out.println(line);
 						String[] s = line.split(" ");
 						String[] temp = s[0].split("/");
-						if(screenFaces){ // dont add screen faces so they will be drawn, store position data
+						if(screenFaces){ // dont add screen faces so they will be drawn, instead store position data
+							model.hasScreen = true;
 							for (int index = 0; index < s.length; index++) {
-								Vertex vert = model.verts.get(Integer.valueOf(s[index].split("/")[0])-1); //
+								Vertexd vert = model.verts.get(Integer.valueOf(s[index].split("/")[0])-1); //
 								if (index == 0) {
 									model.screenX = (float)vert.x;
 									model.screenY = (float)vert.y;
@@ -265,18 +284,45 @@ class int3 {
 }
 
 // stores vertex positions and uv coords
-class Vertex {
+class Vertexd {
 	double x, y, z;
 
-	public Vertex(double x, double y, double z) {
+	public Vertexd(double x, double y, double z) {
 		this.x = x;
 		this.y = y;
 		this.z = z;
 	}
 
-	public Vertex nomalize() {
+	public Vertexd nomalize() {
 		double mag = Math.sqrt(x * x + y * y + z * z);
-		return new Vertex(x / mag, y / mag, z / mag);
+		return new Vertexd(x / mag, y / mag, z / mag);
+	}
+}
+
+class Vertexf {
+	float x, y, z;
+
+	public Vertexf(float x, float y, float z) {
+		this.x = x;
+		this.y = y;
+		this.z = z;
+	}
+	
+	public Vertexf(Vertexd Vertex) {
+		this.x = (float)Vertex.x;
+		this.y = (float)Vertex.y;
+		this.z = (float)Vertex.z;
+	}
+	
+	public Vertexf(double x, double y, double z) {
+		this.x = (float)x;
+		this.y = (float)y;
+		this.z = (float)z;
+	}
+
+	public Vertexf nomalize() {
+		float mag = (float)Math.sqrt(x * x + y * y + z * z);
+		return new Vertexf(x / mag, y / mag, z / mag);
 	}
 }
 
