@@ -18,9 +18,13 @@ import org.lwjgl.Sys;
 import org.lwjgl.opengl.GL11;
 import org.objectweb.asm.tree.analysis.Value;
 
+import cpw.mods.fml.common.Side;
+import cpw.mods.fml.common.asm.SideOnly;
+
 import net.minecraft.src.ModelZombieVillager;
 import net.minecraft.src.Tessellator;
 
+@SideOnly(Side.CLIENT) 
 public class Model {
 
 	public static ArrayList<Model> models = new ArrayList<Model>();
@@ -31,26 +35,28 @@ public class Model {
 	private int id;
 	
 	String texture;
-	ArrayList<Vertexd> verts;
+	ArrayList<Vector> verts;
 	ArrayList<Face> faces;
 	ArrayList<Uv> uvs;
-	ArrayList<Vertexd> normals;
+	ArrayList<Vector> normals;
 
-	public boolean hasScreen = false;
-	public float screenX;
-	public float screenY;
-	public float screenZ;
+	private boolean hasScreen = false;
+	Vector screenPos = new Vector(0, 0, 0);
 	
 	public Model() {
 		this("unNamed");
 	}
 	
+	public Vector getScreenPos(){
+		return this.screenPos;
+	}
+	
 	public Model(String name) {
 		this.name = name;
-		verts = new ArrayList<Vertexd>();
+		verts = new ArrayList<Vector>();
 		uvs = new ArrayList<Uv>();
 		faces = new ArrayList<Face>();
-		normals = new ArrayList<Vertexd>();
+		normals = new ArrayList<Vector>();
 	}
 
 	public static void drawModelById(int id, Tessellator tessellator){
@@ -59,19 +65,17 @@ public class Model {
 	
 
 	public void drawModel(Tessellator tessellator) {
-				
 		for (int f = 0; f < faces.size(); f++) {
 			Face face = faces.get(f); // get face for this itteration
 			if (face.num == 4)
 				tessellator.startDrawingQuads();
 			else
 				tessellator.startDrawing(GL11.GL_TRIANGLES);
-			Vertexd normal = normals.get(face.vertexId[1].c).nomalize(); //get normal from vertdata and normalize
-			tessellator.setNormal((float) normal.x, (float) normal.y, (float) normal.z); //set normal for following quad
-						
+			Vector normal = normals.get(face.vData[1].c); //get normal from vertdata and normalize
+			tessellator.setNormal(normal.x, normal.y, normal.z); //set normal for following quad
 			for (int v = 0; v < face.num; v++) {  //iterate over face verticals
-				Uv uvdata = uvs.get(faces.get(f).vertexId[v].b);				
-				Vertexd vertdata = verts.get(faces.get(f).vertexId[v].a);
+				Uv uvdata = uvs.get(faces.get(f).vData[v].b);				
+				Vector vertdata = verts.get(faces.get(f).vData[v].a);
 				
 				tessellator.addVertexWithUV(vertdata.x, vertdata.y, vertdata.z,	uvdata.u,-uvdata.v); // v
 			}
@@ -138,7 +142,7 @@ public class Model {
 						y = Float.valueOf(s[1]).floatValue()/16f;
 						z = Float.valueOf(s[2]).floatValue()/16f;
 						// System.out.println("v = " + x + ", " + y + ", " + z);
-						model.verts.add(new Vertexd(x, y, z));
+						model.verts.add(new Vector(x, y, z));
 						
 					} else if (line.startsWith("vn ")) { // ----------vertex
 															// normal
@@ -149,7 +153,7 @@ public class Model {
 						y = Float.valueOf(s[1]).floatValue();
 						z = Float.valueOf(s[2]).floatValue();
 						// System.out.println(x + ", " + y + ", " + z);
-						model.normals.add(new Vertexd(x, y, z));
+						model.normals.add(new Vector(x, y, z));
 						
 					} else if (line.startsWith("vt ")) { // -------texture coordinate
 						float u, v;
@@ -168,21 +172,22 @@ public class Model {
 						String[] s = line.split(" ");
 						String[] temp = s[0].split("/");
 						if(screenFaces){ // dont add screen faces so they will be drawn, instead store position data
-							model.hasScreen = true;
+							
 							for (int index = 0; index < s.length; index++) {
-								Vertexd vert = model.verts.get(Integer.valueOf(s[index].split("/")[0])-1); //
+								Vector vert = model.verts.get(Integer.valueOf(s[index].split("/")[0])-1); //
 								if (index == 0) {
-									model.screenX = (float)vert.x;
-									model.screenY = (float)vert.y;
-									model.screenZ = (float)vert.z;
+									model.screenPos.x = (float)vert.x;
+									model.screenPos.y = (float)vert.y;
+									model.screenPos.z = (float)vert.z;
 								} else {
-									if (vert.x > model.screenX) model.screenX = (float)vert.x;
-									if (vert.y < model.screenY) model.screenY = (float)vert.y;
-									if (vert.z > model.screenZ) model.screenZ = (float)vert.z;
+									if (vert.x > model.screenPos.x) model.screenPos.x = (float)vert.x;
+									if (vert.y > model.screenPos.y) model.screenPos.y = (float)vert.y;
+									if (vert.z > model.screenPos.z) model.screenPos.z = (float)vert.z;
 								}
 								
 							}
-							System.out.println(model.screenX + ", " + model.screenY + ", " + model.screenZ);
+							System.out.println("screen position found at:" + model.screenPos.toString());
+							model.hasScreen = true;
 						} else if ((s.length == 4 || s.length == 3) && temp.length == 3) {
 
 							int3 v1 = new int3((short)(Short.valueOf(temp[0])-1), (short)(Short.valueOf(temp[1])-1), (short)(Short.valueOf(temp[2])-1));
@@ -218,6 +223,7 @@ public class Model {
 				// model.normals.get(1).y + ", " + model.normals.get(1).z);
 
 				br.close();
+				;
 				Model.models.add(model);
 				model.id = models.indexOf(model);
 				System.out.println("Model " + model.name + " id:" + model.id + " loaded:" + model.verts.size() + " verts, " + model.uvs.size() + "uvs, " + model.faces.size() + "faces, and " + model.normals.size() + "normals.");
@@ -237,27 +243,27 @@ public class Model {
 // Each face stores 4 sets of id's each set stores vertexid, uvid, and normalid 
 class Face {
 	int num;
-	int3[] vertexId;
+	int3[] vData;
 
 	public Face(int3 v1, int3 v2, int3 v3, int3 v4) {
 		num = 4;
-		vertexId = new int3[4];
-		vertexId[0] = v1;
-		vertexId[1] = v2;
-		vertexId[2] = v3;
-		vertexId[3] = v4;
+		vData = new int3[4];
+		vData[0] = v1;
+		vData[1] = v2;
+		vData[2] = v3;
+		vData[3] = v4;
 	}
 	
 	public Face(int3 v1, int3 v2, int3 v3) {
 		num = 3;
-		vertexId = new int3[4];
-		vertexId[0] = v1;
-		vertexId[1] = v2;
-		vertexId[2] = v3;
+		vData = new int3[4];
+		vData[0] = v1;
+		vData[1] = v2;
+		vData[2] = v3;
 	}
 	
 	public void addVertsToTessellator(Tessellator tessellator){
-		for (int i = 0; i < vertexId.length; i++) {
+		for (int i = 0; i < vData.length; i++) {
 			
 		}
 		
@@ -283,46 +289,43 @@ class int3 {
 	}
 }
 
-// stores vertex positions and uv coords
-class Vertexd {
-	double x, y, z;
-
-	public Vertexd(double x, double y, double z) {
-		this.x = x;
-		this.y = y;
-		this.z = z;
-	}
-
-	public Vertexd nomalize() {
-		double mag = Math.sqrt(x * x + y * y + z * z);
-		return new Vertexd(x / mag, y / mag, z / mag);
-	}
-}
-
-class Vertexf {
+//-------------------------------------------
+//very simple vector class
+//-------------------------------------------
+class Vector { 
 	float x, y, z;
 
-	public Vertexf(float x, float y, float z) {
+	public Vector(float x, float y, float z) {
 		this.x = x;
 		this.y = y;
 		this.z = z;
 	}
 	
-	public Vertexf(Vertexd Vertex) {
-		this.x = (float)Vertex.x;
-		this.y = (float)Vertex.y;
-		this.z = (float)Vertex.z;
-	}
-	
-	public Vertexf(double x, double y, double z) {
+	public Vector(double x, double y, double z) {
 		this.x = (float)x;
 		this.y = (float)y;
 		this.z = (float)z;
 	}
+	
+	public static Vector zero(){return new Vector(0f, 0f, 0f);}
 
-	public Vertexf nomalize() {
+	public void nomalize() {
 		float mag = (float)Math.sqrt(x * x + y * y + z * z);
-		return new Vertexf(x / mag, y / mag, z / mag);
+		this.x /= mag;
+		this.y /= mag;
+		this.z /= mag;
+	}
+
+	public static void nomalizeAll(ArrayList<Vector> list) {
+		for (Vector vert : list) {
+			vert.nomalize();
+		}
+		return ;
+	}
+	
+	@Override
+	public String toString() {
+		return new String(x + ", "+ y + ", " + z);
 	}
 }
 

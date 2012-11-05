@@ -14,19 +14,21 @@ import net.minecraft.src.TileEntitySpecialRenderer;
 
 public class GameMachineTile extends TileEntity {
 	
+	// general params
 	int modelid;
 	int facingDir;
-	//float angle;
 	
+	// drawFlags
 	boolean drawWire = false;
-	private GameBoard gamescreen;
-	float x, y, z;
+	
+	// screen data
+	private Screen gamescreen;
 		
 	public GameMachineTile() {
-		gamescreen = new GameBoard(20, 16, 16);
+		gamescreen = new Screen(20, 16, 16);
 	}
 	
-	public GameBoard getGamescreen() {
+	public Screen getGamescreen() {
 		return gamescreen;
 	}
 	
@@ -35,11 +37,7 @@ public class GameMachineTile extends TileEntity {
 		super.readFromNBT(nbt);
 		this.modelid = nbt.getInteger("modelid");
 		this.facingDir = nbt.getInteger("facing");
-		this.x = nbt.getFloat("xoffset");
-		this.y = nbt.getFloat("yoffset");
-		this.z = nbt.getFloat("zoffset");
 		this.drawWire = nbt.getBoolean("wire");
-		//this.angle = nbt.getFloat("angle");
 	}
 	
 	@Override
@@ -47,11 +45,7 @@ public class GameMachineTile extends TileEntity {
 		super.writeToNBT(nbt);
 		nbt.setInteger("facing", this.facingDir);
 		nbt.setInteger("modelid", this.modelid);
-		nbt.setFloat("xoffset", this.x);
-		nbt.setFloat("yoffset", this.y);
-		nbt.setFloat("zoffset", this.z);
 		nbt.setBoolean("wire", this.drawWire);
-		//nbt.setFloat("angle", this.angle);
 		
         NBTTagList itemList = new NBTTagList();
         nbt.setTag("Inventory", itemList);

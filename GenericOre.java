@@ -25,7 +25,7 @@ public class GenericOre extends BlockOre{
 	
 	@Override
 	public int idDropped(int par1, Random par2Random, int par3) {
-		return Generic.genericItem.shiftedIndex;
+		return BaseGamerMod.genericItem.shiftedIndex;
 	}
 	
 	@Override
@@ -35,6 +35,6 @@ public class GenericOre extends BlockOre{
 
 	@Override
 	public int getRenderType() {
-		return Generic.renderId;
+		return BaseGamerMod.renderId;
 	}
 }

@@ -51,10 +51,10 @@ import cpw.mods.fml.common.Side;
 import cpw.mods.fml.common.asm.SideOnly;
 import cpw.mods.fml.common.registry.GameRegistry;
 
-public class BlockModelContainer extends BlockContainer {
+public class BaseGameBlock extends BlockContainer {
 	public static Class tileEnt;
 
-	protected BlockModelContainer(int par1, int par2) {
+	protected BaseGameBlock(int par1, int par2) {
 		super(par1, 7, Material.rock);
 		tileEnt = GameMachineTile.class;
 	}
@@ -65,9 +65,7 @@ public class BlockModelContainer extends BlockContainer {
 	}
 
 	@Override
-	public void addCollidingBlockToList(World world, int x, int y, int z,
-			AxisAlignedBB aabb, List list, Entity entitiy) {
-
+	public void addCollidingBlockToList(World world, int x, int y, int z, AxisAlignedBB aabb, List list, Entity entitiy) {
 		super.addCollidingBlockToList(world, x, y, z, aabb, list, entitiy);
 	}
 
@@ -124,19 +122,19 @@ public class BlockModelContainer extends BlockContainer {
 		return blockID;
 	}
 
+	
 	@ForgeSubscribe
 	public void drawingHighlight(DrawBlockHighlightEvent event) {
+		
 		MovingObjectPosition mop = event.target;
-		System.out.println(mop.hitVec.toString());
 		World world = event.context.theWorld;
 		if (world.getBlockId(mop.blockX, mop.blockY, mop.blockZ) == this.blockID) {
-			
-			glColor3f(0, 0, 0);			
-			//Model.drawModelById(tt.modelid, Tessellator.instance);
-			
 
-			glPolygonMode(GL11.GL_FRONT, GL11.GL_FILL);
-			event.setCanceled(false);
+			TileEntity tile = world.getBlockTileEntity(mop.blockX, mop.blockY, mop.blockZ);
+			if (tile instanceof GameMachineTile){
+				((GameMachineTile)tile).drawWire = true;
+			}
+			event.setCanceled(true);
 		}
 	}
 

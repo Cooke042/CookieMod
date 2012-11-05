@@ -29,11 +29,8 @@ import cpw.mods.fml.common.Mod.Block;
 public class GameTileRenderer extends TileEntitySpecialRenderer {
 	
 	private static Model testTv;
-	private static Tessellator tessellator = Tessellator.instance;
+	private static Tessellator tessellator = Tessellator.instance;	
 	
-	private float screenData[];
-
-		
 	public GameTileRenderer() {
 		
 		//NMTMODELRENDERER
@@ -50,10 +47,10 @@ public class GameTileRenderer extends TileEntitySpecialRenderer {
 		super.setTileEntityRenderer(tileEntityRenderer);
 	}
 	
-	public void renderTile(TileEntity tileEntity, double x, double y, double z, float t) {
+	public void renderTile(TileEntity tileEntity, double x, double y, double z, float time) {
 
 		GameMachineTile tt = (GameMachineTile) tileEntity;
-		GameBoard gb = tt.getGamescreen();
+		Screen gb = tt.getGamescreen();
 		RenderBlocks br = new RenderBlocks(tt.worldObj);
 		
 		glPushMatrix();
@@ -71,11 +68,8 @@ public class GameTileRenderer extends TileEntitySpecialRenderer {
 		
 		//---Draw Screen---
 		glPushMatrix();
-		if (testTv.) {
-			
-		}
-		glTranslatef(testTv.screenX, testTv.screenY, testTv.screenZ);		
-		gb.drawArray(tessellator);
+		glTranslatef(testTv.screenPos.x, testTv.screenPos.y, testTv.screenPos.z);		
+		gb.drawArray(tessellator, time);
 		glPopMatrix();
 		
 		//---Draw Wire-frame---
@@ -83,9 +77,10 @@ public class GameTileRenderer extends TileEntitySpecialRenderer {
 			glColor3f(0, 0, 0);
 			glPolygonMode(GL_FRONT, GL_LINE);
 			Model.drawModelById(tt.modelid, tessellator);
+			glPolygonMode( GL_FRONT, GL_FILL );
+			tt.drawWire = false;
 		}
 		
-		glPolygonMode( GL_FRONT, GL_FILL );
 
 		glPopMatrix();
 	}

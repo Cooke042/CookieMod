@@ -6,6 +6,7 @@ import net.minecraft.src.Block;
 import net.minecraft.src.BlockTallGrass;
 import net.minecraft.src.BlockTorch;
 import net.minecraft.src.CreativeTabs;
+import net.minecraft.src.Entity;
 import net.minecraft.src.EnumArmorMaterial;
 import net.minecraft.src.GameSettings;
 import net.minecraft.src.Item;
@@ -39,69 +40,65 @@ import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.LanguageRegistry;
 import cpw.mods.fml.common.registry.TickRegistry;
 
-@Mod(modid="Generic", name="Generic", version="0.0.0")
-@NetworkMod(clientSideRequired=true, serverSideRequired=false)
-public class Generic{
-	
+@Mod(modid = "GamerMod", name = "GamerMod", version = "0.1a")
+@NetworkMod(clientSideRequired = true, serverSideRequired = false)
+public class BaseGamerMod {
+
 	public static final Item genericItem = new GenericItem(5001).setIconIndex(0);
 	public static int renderId;
-	//public static Model tvModel;
-	
-    // The instance of your mod that Forge uses.
+	// public static Model tvModel;
+
+	// The instance of your mod that Forge uses.
 	@Instance("Generic")
-	public static Generic instance; // This is the object reference to your class that Forge uses.
-	
-	//-------------Blocks--------------
-	public static final Block blockTile = new BlockModelContainer(500,5)
-		.setHardness(0.5F)
-		.setStepSound(Block.soundStoneFootstep)
-		.setBlockName("blockTable")
-		.setCreativeTab(CreativeTabs.tabDecorations);
-	
-	
+	public static BaseGamerMod instance; // This is the object reference to your class that Forge uses.
+
+	// -------------Blocks--------------
+	public static final Block blockTile = new BaseGameBlock(500, 5).setHardness(0.5F).setStepSound(Block.soundStoneFootstep).setBlockName("blockTable").setCreativeTab(CreativeTabs.tabDecorations);
+
 	public static final ItemArmor testArmor = new ItemArmor(5002, EnumArmorMaterial.DIAMOND, 3, 3);
-	
-		
+
 	// Says where the client and server 'proxy' code is loaded.
-	@SidedProxy(clientSide="cookieMod.ClientProxy", serverSide="cookieMod.CommonProxy")
+	@SidedProxy(clientSide = "cookieMod.ClientProxy", serverSide = "cookieMod.CommonProxy")
 	public static CommonProxy proxy;
-	
+
 	@PreInit
 	public void preInit(FMLPreInitializationEvent event) {
 		// This method is called before Init. This is where reading configuration files goes.
 	}
-	
+
 	@Init
 	public void load(FMLInitializationEvent event) {
-		//This is where the majority of your Mod initialization will go. 
-		//Block and item registry, WorldGen registry, and crafting recipes are common things found here.
-		//tvModel = Model.lo
-		
-		//------------Blocks----------
+		// This is where the majority of your Mod initialization will go.
+		// Block and item registry, WorldGen registry, and crafting recipes are common things found here.
+		// tvModel = Model.lo
+
+		// ------------Blocks----------
 		MinecraftForge.setBlockHarvestLevel(blockTile, "shovel", 0);
 		GameRegistry.registerBlock(blockTile);
-		
+
 		LanguageRegistry.addName(testArmor, "my Armor");
-		
+
 		MinecraftForge.EVENT_BUS.register(blockTile);
-		
-		//RenderingRegistry.registerEntityRenderingHandler(entityClass, renderer)(renderId, new renderFurniture());
-		
+
+		// RenderingRegistry.registerEntityRenderingHandler(entityClass, renderer)(renderId, new renderFurniture());
+
 		renderId = RenderingRegistry.getNextAvailableRenderId();
-		
-		//------------Items----------
+
+		// ------------Items----------
 		LanguageRegistry.addName(genericItem, "Tile Entity Item");
+
+		// ------------Entitys----------
 		
-		//------------TileEntitys----------
-		
-		//------------Crafting----------
-		GameRegistry.addRecipe(new ItemStack(blockTile, 64), "x",'x',Block.dirt);
-			
+		EntityRegistry.registerModEntity(Seat.class, "seatEnt", EntityRegistry.findGlobalUniqueEntityId(),this,250,5,false);
+				
+		// ------------TileEntitys----------
+
+		// ------------Crafting----------
+		GameRegistry.addRecipe(new ItemStack(blockTile, 64), "x", 'x', Block.dirt);
+
 		proxy.registerRenderers();
 	}
-	
-	
-	
+
 	@PostInit
 	public void postInit(FMLPostInitializationEvent event) {
 		// This is where code goes for working with other mods. For example, setting up custom Equivalent Exchange block and item values.
