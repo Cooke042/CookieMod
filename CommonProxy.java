@@ -10,5 +10,6 @@ public class CommonProxy {
 	//client stuff?
 	public void registerRenderers() {
 		GameRegistry.registerTileEntity(GameMachineTile.class, "TestTile");
+		GameRegistry.registerTileEntity(SeatTile.class, "TestTile");
 	}
 }

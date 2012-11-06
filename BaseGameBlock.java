@@ -70,8 +70,7 @@ public class BaseGameBlock extends BlockContainer {
 	}
 
 	/**
-	 * Returns a new instance of a block's tile entity class. Called on placing
-	 * the block.
+	 * Returns a new instance of a block's tile entity class. Called on placing the block.
 	 */
 	@Override
 	public TileEntity createNewTileEntity(World world) {
@@ -79,27 +78,22 @@ public class BaseGameBlock extends BlockContainer {
 	}
 
 	@Override
-	public void onBlockPlacedBy(World world, int x, int y, int z,
-			EntityLiving player) {
+	public void onBlockPlacedBy(World world, int x, int y, int z, EntityLiving player) {
 
-		int meta = (MathHelper
-				.floor_double((double) (player.rotationYaw * 4.0F / 360.0F) + 0.5D)) % 4;
-		GameMachineTile tt = (GameMachineTile) world
-				.getBlockTileEntity(x, y, z);
+		int meta = (MathHelper.floor_double((double) (player.rotationYaw * 4.0F / 360.0F) + 0.5D)) % 4;
+		GameMachineTile tt = (GameMachineTile) world.getBlockTileEntity(x, y, z);
 		tt.facingDir = meta;
 		tt.modelid = 0;
 		setBlockBounds(0f, 0f, .2f, 1f, .7f, .8f);
 	}
 
 	@Override
-	public void onBlockClicked(World world, int x, int y, int z,
-			EntityPlayer player) {
+	public void onBlockClicked(World world, int x, int y, int z, EntityPlayer player) {
 		return;
 	}
 
 	@Override
-	public boolean onBlockActivated(World world, int x, int y, int z,
-			EntityPlayer player, int par6, float par7, float par8, float par9) {
+	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int par6, float par7, float par8, float par9) {
 
 		GameMachineTile tt = (GameMachineTile) world.getBlockTileEntity(x, y, z);
 		WorldInfo wi = world.getWorldInfo();
@@ -122,17 +116,16 @@ public class BaseGameBlock extends BlockContainer {
 		return blockID;
 	}
 
-	
 	@ForgeSubscribe
 	public void drawingHighlight(DrawBlockHighlightEvent event) {
-		
+
 		MovingObjectPosition mop = event.target;
 		World world = event.context.theWorld;
 		if (world.getBlockId(mop.blockX, mop.blockY, mop.blockZ) == this.blockID) {
 
 			TileEntity tile = world.getBlockTileEntity(mop.blockX, mop.blockY, mop.blockZ);
-			if (tile instanceof GameMachineTile){
-				((GameMachineTile)tile).drawWire = true;
+			if (tile instanceof GameMachineTile) {
+				((GameMachineTile) tile).drawWire = true;
 			}
 			event.setCanceled(true);
 		}
@@ -147,11 +140,10 @@ public class BaseGameBlock extends BlockContainer {
 	public int getRenderType() {
 		return -1;
 	}
-
+	
 	/**
-	 * Is this block (a) opaque and (b) a full 1m cube? This determines whether
-	 * or not to render the shared face of two adjacent blocks and also whether
-	 * the player can attach torches, redstone wire, etc to this block.
+	 * Is this block (a) opaque and (b) a full 1m cube? This determines whether or not to render the shared face of two adjacent blocks and also
+	 * whether the player can attach torches, redstone wire, etc to this block.
 	 */
 	public boolean isOpaqueCube() {
 		return false;

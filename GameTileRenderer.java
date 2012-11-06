@@ -27,60 +27,61 @@ import static org.lwjgl.opengl.GL11.*;
 import cpw.mods.fml.common.Mod.Block;
 
 public class GameTileRenderer extends TileEntitySpecialRenderer {
-	
+
 	private static Model testTv;
-	private static Tessellator tessellator = Tessellator.instance;	
-	
+	private static Tessellator tessellator = Tessellator.instance;
+
 	public GameTileRenderer() {
-		
-		//NMTMODELRENDERER
-		//modelRenderer = new NMTModelRenderer(new ModelChest(), "testing");
-		//ModelTileRenderer.File f = new File("mods/generic/boxTest.obj");
-		//modelRenderer.addModelOBJ(f.toURI().toString());
-		
+
+		// NMTMODELRENDERER
+		// modelRenderer = new NMTModelRenderer(new ModelChest(), "testing");
+		// ModelTileRenderer.File f = new File("mods/generic/boxTest.obj");
+		// modelRenderer.addModelOBJ(f.toURI().toString());
+
 		testTv = Model.LoadModelFromFile("boxTv.obj", CommonProxy.BLOCK_PNG);
-		//gamescreen = new GameBoard(7.085f/16f, 11.762f/16f, -4.031f/16f, 20, 16, 16);
-						
+		// gamescreen = new GameBoard(7.085f/16f, 11.762f/16f, -4.031f/16f, 20, 16, 16);
+
 	}
 
 	public void setTileEntityRenderer(TileEntityRenderer tileEntityRenderer) {
 		super.setTileEntityRenderer(tileEntityRenderer);
 	}
-	
+
 	public void renderTile(TileEntity tileEntity, double x, double y, double z, float time) {
 
 		GameMachineTile tt = (GameMachineTile) tileEntity;
 		Screen gb = tt.getGamescreen();
 		RenderBlocks br = new RenderBlocks(tt.worldObj);
-		
+
 		glPushMatrix();
 
-		br.renderBlockAllFaces(net.minecraft.src.Block.dirt, (int)x, (int)y+1, (int)z);
-		
+		br.renderBlockAllFaces(net.minecraft.src.Block.dirt, (int) x, (int) y + 1, (int) z);
+
 		glTranslatef((float) x + .5f, (float) y, (float) z + .5f);
+
+		glRotatef(((GameMachineTile) tileEntity).facingDir * -90f, 0, 1, 0); // set facing dir
 		
-		glRotatef(((GameMachineTile) tileEntity).facingDir * -90f, 0, 1, 0);
 		bindTextureByName(CommonProxy.BLOCK_PNG);
 
-		//---draw Model---
-	    glPolygonMode(GL_FRONT, GL_FILL);
+		// ---draw Model---
+		glPolygonMode(GL_FRONT, GL_FILL);
 		Model.drawModelById(tt.modelid, tessellator);
-		
-		//---Draw Screen---
+
+		// ---Draw Screen---
 		glPushMatrix();
-		glTranslatef(testTv.screenPos.x, testTv.screenPos.y, testTv.screenPos.z);		
+		glTranslatef(testTv.screenPos.x, testTv.screenPos.y, testTv.screenPos.z);
 		gb.drawArray(tessellator, time);
-		glPopMatrix();
-		
-		//---Draw Wire-frame---
-		if (tt.drawWire){
+		glPopMatrix();		
+
+		// ---Draw Wire-frame---
+		// used for the highlight effect
+		if (tt.drawWire) {
 			glColor3f(0, 0, 0);
 			glPolygonMode(GL_FRONT, GL_LINE);
 			Model.drawModelById(tt.modelid, tessellator);
-			glPolygonMode( GL_FRONT, GL_FILL );
+			glPolygonMode(GL_FRONT, GL_FILL);
 			tt.drawWire = false;
 		}
-		
 
 		glPopMatrix();
 	}
