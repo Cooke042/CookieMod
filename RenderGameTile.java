@@ -1,4 +1,4 @@
-package cookieMod;
+package CookieMod;
 
 import java.awt.image.TileObserver;
 import java.io.File;
@@ -26,12 +26,12 @@ import static org.lwjgl.opengl.GL11.*;
 
 import cpw.mods.fml.common.Mod.Block;
 
-public class GameTileRenderer extends TileEntitySpecialRenderer {
+public class RenderGameTile extends TileEntitySpecialRenderer {
 
 	private static Model testTv;
 	private static Tessellator tessellator = Tessellator.instance;
 
-	public GameTileRenderer() {
+	public RenderGameTile() {
 
 		// NMTMODELRENDERER
 		// modelRenderer = new NMTModelRenderer(new ModelChest(), "testing");
@@ -49,7 +49,7 @@ public class GameTileRenderer extends TileEntitySpecialRenderer {
 
 	public void renderTile(TileEntity tileEntity, double x, double y, double z, float time) {
 
-		GameMachineTile tt = (GameMachineTile) tileEntity;
+		TileGameMachine tt = (TileGameMachine) tileEntity;
 		Screen gb = tt.getGamescreen();
 		RenderBlocks br = new RenderBlocks(tt.worldObj);
 
@@ -59,13 +59,13 @@ public class GameTileRenderer extends TileEntitySpecialRenderer {
 
 		glTranslatef((float) x + .5f, (float) y, (float) z + .5f);
 
-		glRotatef(((GameMachineTile) tileEntity).facingDir * -90f, 0, 1, 0); // set facing dir
+		glRotatef(((TileGameMachine) tileEntity).facingDir * -90f, 0, 1, 0); // set facing dir
 		
 		bindTextureByName(CommonProxy.BLOCK_PNG);
 
 		// ---draw Model---
 		glPolygonMode(GL_FRONT, GL_FILL);
-		Model.drawModelById(tt.modelid, tessellator);
+		Model.drawModelById(tt.getModelid(), tessellator);
 
 		// ---Draw Screen---
 		glPushMatrix();
@@ -78,7 +78,7 @@ public class GameTileRenderer extends TileEntitySpecialRenderer {
 		if (tt.drawWire) {
 			glColor3f(0, 0, 0);
 			glPolygonMode(GL_FRONT, GL_LINE);
-			Model.drawModelById(tt.modelid, tessellator);
+			Model.drawModelById(tt.getModelid(), tessellator);
 			glPolygonMode(GL_FRONT, GL_FILL);
 			tt.drawWire = false;
 		}

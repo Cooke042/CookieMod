@@ -1,4 +1,4 @@
-package cookieMod;
+package CookieMod;
 
 import static org.lwjgl.opengl.GL11.GL_FRONT;
 import static org.lwjgl.opengl.GL11.GL_LINE;
@@ -56,7 +56,7 @@ public class BaseGameBlock extends BlockContainer {
 
 	protected BaseGameBlock(int par1, int par2) {
 		super(par1, 7, Material.rock);
-		tileEnt = GameMachineTile.class;
+		tileEnt = TileGameMachine.class;
 	}
 
 	@Override
@@ -74,16 +74,16 @@ public class BaseGameBlock extends BlockContainer {
 	 */
 	@Override
 	public TileEntity createNewTileEntity(World world) {
-		return new GameMachineTile();
+		return new TileGameMachine();
 	}
 
 	@Override
 	public void onBlockPlacedBy(World world, int x, int y, int z, EntityLiving player) {
 
 		int meta = (MathHelper.floor_double((double) (player.rotationYaw * 4.0F / 360.0F) + 0.5D)) % 4;
-		GameMachineTile tt = (GameMachineTile) world.getBlockTileEntity(x, y, z);
+		TileGameMachine tt = (TileGameMachine) world.getBlockTileEntity(x, y, z);
 		tt.facingDir = meta;
-		tt.modelid = 0;
+		tt.setModel(0);
 		setBlockBounds(0f, 0f, .2f, 1f, .7f, .8f);
 	}
 
@@ -95,9 +95,9 @@ public class BaseGameBlock extends BlockContainer {
 	@Override
 	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int par6, float par7, float par8, float par9) {
 
-		GameMachineTile tt = (GameMachineTile) world.getBlockTileEntity(x, y, z);
+		TileGameMachine tt = (TileGameMachine) world.getBlockTileEntity(x, y, z);
 		WorldInfo wi = world.getWorldInfo();
-		Model ttmodel = Model.models.get(tt.modelid);
+		Model ttmodel = Model.models.get(tt.getModelid());
 
 		if (player.isSneaking()) {
 			tt.drawWire = !tt.drawWire;
@@ -124,8 +124,8 @@ public class BaseGameBlock extends BlockContainer {
 		if (world.getBlockId(mop.blockX, mop.blockY, mop.blockZ) == this.blockID) {
 
 			TileEntity tile = world.getBlockTileEntity(mop.blockX, mop.blockY, mop.blockZ);
-			if (tile instanceof GameMachineTile) {
-				((GameMachineTile) tile).drawWire = true;
+			if (tile instanceof TileGameMachine) {
+				((TileGameMachine) tile).drawWire = true;
 			}
 			event.setCanceled(true);
 		}

@@ -1,4 +1,4 @@
-package cookieMod;
+package CookieMod;
 
 import cpw.mods.fml.common.registry.GameRegistry;
 
@@ -9,7 +9,6 @@ public class CommonProxy {
 	
 	//client stuff?
 	public void registerRenderers() {
-		GameRegistry.registerTileEntity(GameMachineTile.class, "TestTile");
-		GameRegistry.registerTileEntity(SeatTile.class, "TestTile");
+		GameRegistry.registerTileEntity(TileGameMachine.class, "TestTile");
 	}
 }

@@ -1,4 +1,4 @@
-package cookieMod;
+package CookieMod;
 
 import net.minecraft.src.CreativeTabs;
 import net.minecraft.src.EntityPlayer;

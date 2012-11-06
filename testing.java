@@ -1,4 +1,4 @@
-package cookieMod;
+package CookieMod;
 
 public class testing {
 

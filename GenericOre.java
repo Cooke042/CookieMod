@@ -1,4 +1,4 @@
-package cookieMod;
+package CookieMod;
 
 import java.util.Random;
 import net.minecraft.src.Block;
@@ -25,7 +25,7 @@ public class GenericOre extends BlockOre{
 	
 	@Override
 	public int idDropped(int par1, Random par2Random, int par3) {
-		return ModBaseGamer.genericItem.shiftedIndex;
+		return BaseCookieMod.genericItem.shiftedIndex;
 	}
 	
 	@Override
@@ -35,6 +35,6 @@ public class GenericOre extends BlockOre{
 
 	@Override
 	public int getRenderType() {
-		return ModBaseGamer.renderId;
+		return BaseCookieMod.renderId;
 	}
 }

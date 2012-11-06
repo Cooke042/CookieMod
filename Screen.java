@@ -1,4 +1,4 @@
-package cookieMod;
+package CookieMod;
 
 import java.util.EnumSet;
 
@@ -17,17 +17,18 @@ public class Screen extends Model {
 	private Pixel[][] grid; // Pixel array
 	float sw, sh; // Pixel size width, height
 	public static int black = 24;
-	Pixel border;
+	Pixel borderPixel;
 
-	public Screen(int sizex, int sizey, int pixelsize) {
-		sw = 10.974f / 16f / (float) sizex; // could get this from model data
-		sh = 8.768f / 16f / (float) sizey; // ditto
-		// grid = getTetrisbackground();
+	public Screen(int sizex, int sizey) {
 		grid = new Pixel[sizex][sizey];
+		setPixelAspect(sizex*.0625f, sizey*.0625f);//defailt 1:1 at pixel scale
 		clearScreen();
-		border = new Pixel(8);
-		drawHLine(border, 2, 5, 10);
-		drawHLine(border, 15, 5, 10);
+		borderPixel = new Pixel(8);
+		for (int i = 0; i < 10; i++) {
+
+			drawHLine(borderPixel, i*2, 5, 15);
+		}
+		
 
 	}
 
@@ -41,6 +42,11 @@ public class Screen extends Model {
 				grid[i][j] = new Pixel(24);
 			}
 		}
+	}
+	
+	public void setPixelAspect(float width, float height){
+		sw = width /(float) grid.length;
+		sh = height /(float) grid[0].length;
 	}
 
 	public void setRegion(Pixel pixel, int stx, int sty, int enx, int eny) {
@@ -71,6 +77,16 @@ public class Screen extends Model {
 			start = 0;
 		for (int i = start; i < end; i++) {
 			grid[i][ypos].textureid = pixel.textureid;
+		}
+	}
+
+	public void drawVLine(Pixel pixel, int xpos, int start, int end) {
+		if (grid.length < end)
+			end = grid.length;
+		if (start < 0)
+			start = 0;
+		for (int i = start; i < end; i++) {
+			grid[xpos][i].textureid = pixel.textureid;
 		}
 	}
 

@@ -1,4 +1,4 @@
-package cookieMod;
+package CookieMod;
 
 import java.util.EnumSet;
 
@@ -41,35 +41,29 @@ import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.LanguageRegistry;
 import cpw.mods.fml.common.registry.TickRegistry;
 
-@Mod(modid = "GamerMod", name = "GamerMod", version = "0.1a")
+@Mod(modid = "CookieMod", name = "CookieMod", version = "0.1a")
 @NetworkMod(clientSideRequired = true, serverSideRequired = false)
-public class ModBaseGamer {
+public class BaseCookieMod {
 
 	public static final Item genericItem = new GenericItem(5001).setIconIndex(0);
 	public static int renderId;
 	// public static Model tvModel;
 
 	// The instance of your mod that Forge uses.
-	@Instance("Generic")
-	public static ModBaseGamer instance; // This is the object reference to your class that Forge uses.
+	@Instance("BaseCookieMod")
+	public static BaseCookieMod instance; // This is the object reference to your class that Forge uses.
 
 	// -------------Blocks--------------
-	public static final Block blockTile = new BaseGameBlock(500, 5)
+	public static final Block blockEntertainment = new BaseGameBlock(500, 5)
 				.setHardness(0.5F)
 				.setStepSound(Block.soundStoneFootstep)
-				.setBlockName("blockTable")
-				.setCreativeTab(CreativeTabs.tabDecorations);
-
-	public static final Block seat = new BlockEntity(501)
-				.setHardness(0.5F)
-				.setStepSound(Block.soundStoneFootstep)
-				.setBlockName("BlockSeatEntity")
+				.setBlockName("Entertainment Block")
 				.setCreativeTab(CreativeTabs.tabDecorations);
 	
 	//public static final ItemArmor testArmor = new ItemArmor(5002, EnumArmorMaterial.DIAMOND, 3, 3);
 
 	// Says where the client and server 'proxy' code is loaded.
-	@SidedProxy(clientSide = "cookieMod.ClientProxy", serverSide = "cookieMod.CommonProxy")
+	@SidedProxy(clientSide = "CookieMod.ClientProxy", serverSide = "CookieMod.CommonProxy")
 	public static CommonProxy proxy;
 
 	@PreInit
@@ -84,13 +78,12 @@ public class ModBaseGamer {
 		// tvModel = Model.lo
 
 		// ------------Blocks----------
-		MinecraftForge.setBlockHarvestLevel(blockTile, "shovel", 0);
-		GameRegistry.registerBlock(blockTile);
+		MinecraftForge.setBlockHarvestLevel(blockEntertainment, "shovel", 0);
+		GameRegistry.registerBlock(blockEntertainment);
 		
-		MinecraftForge.setBlockHarvestLevel(seat, "shovel", 0);
-		GameRegistry.registerBlock(seat);
+		LanguageRegistry.addName(blockEntertainment, "Nintendo!");
 
-		MinecraftForge.EVENT_BUS.register(blockTile);
+		MinecraftForge.EVENT_BUS.register(blockEntertainment);
 
 		//RenderingRegistry.registerEntityRenderingHandler(entityClass, renderer)(renderId, new renderFurniture());
 		// ------------Items----------
@@ -103,7 +96,7 @@ public class ModBaseGamer {
 		// ------------TileEntitys----------
 
 		// ------------Crafting----------
-		GameRegistry.addRecipe(new ItemStack(blockTile, 64), "x", 'x', Block.dirt);
+		GameRegistry.addRecipe(new ItemStack(blockEntertainment, 64), "x", 'x', Block.dirt);
 
 		proxy.registerRenderers();
 	}
