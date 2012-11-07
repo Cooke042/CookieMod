@@ -1,5 +1,9 @@
 package CookieMod;
 
+import java.util.EnumSet;
+
+import cpw.mods.fml.common.ITickHandler;
+import cpw.mods.fml.common.TickType;
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.IInventory;
 import net.minecraft.src.INetworkManager;
@@ -11,8 +15,9 @@ import net.minecraft.src.Packet132TileEntityData;
 import net.minecraft.src.Tessellator;
 import net.minecraft.src.TileEntity;
 import net.minecraft.src.TileEntitySpecialRenderer;
+import net.minecraftforge.client.IItemRenderer;
 
-public class TileGameMachine extends TileEntity {
+public class TileGameMachine extends TileEntity implements ITickHandler{
 
 	// general params
 	private int modelid;
@@ -27,8 +32,6 @@ public class TileGameMachine extends TileEntity {
 	public TileGameMachine() {
 		setModel(modelid);
 	}
-    
-	
 	
 	public Boolean setModel(int modelid) {
 
@@ -96,5 +99,32 @@ public class TileGameMachine extends TileEntity {
 
 	public int getModelid() {
 		return modelid;
+	}
+
+	@Override
+	public void tickStart(EnumSet<TickType> type, Object... tickData) {
+		float time = (Float)tickData[0];
+		System.out.println(time);
+		
+		
+	}
+
+	@Override
+	public void tickEnd(EnumSet<TickType> type, Object... tickData) {	
+		//float time = (Float)tickData[0];
+	}
+
+	@Override
+	public EnumSet<TickType> ticks() {
+		return EnumSet.of(TickType.RENDER);
+	}
+
+	@Override
+	public String getLabel() {
+		return null;
+	}
+
+	public void renderUpdate(float time) {
+		gamescreen.borderPixel.color.x += 
 	}
 }

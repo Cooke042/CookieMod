@@ -4,10 +4,9 @@ import java.util.EnumSet;
 
 import org.lwjgl.opengl.GL11;
 
-import cpw.mods.fml.common.ITickHandler;
-import cpw.mods.fml.common.TickType;
 
 import net.minecraft.src.ModelRenderer;
+import net.minecraft.src.NextTickListEntry;
 import net.minecraft.src.Tessellator;
 import net.minecraft.src.Vec3;
 
@@ -24,12 +23,11 @@ public class Screen extends Model {
 		setPixelAspect(sizex*.0625f, sizey*.0625f);//defailt 1:1 at pixel scale
 		clearScreen();
 		borderPixel = new Pixel(8);
-		for (int i = 0; i < 10; i++) {
+		for (int i = 0; i < 4; i++) {
 
-			drawHLine(borderPixel, i*2, 5, 15);
+			drawVLine(borderPixel, i*5, 5, 20);
+			drawHLine(borderPixel, i*5, 5, 20);
 		}
-		
-
 	}
 
 	public Pixel getPixel(int x, int y) {
@@ -39,7 +37,8 @@ public class Screen extends Model {
 	public void clearScreen() {
 		for (int i = 0; i < grid.length; i++) { // fill array with ones
 			for (int j = 0; j < grid[i].length; j++) {
-				grid[i][j] = new Pixel(24);
+				//grid[i][j] = new Pixel(24);
+				grid[i][j] = null;
 			}
 		}
 	}
@@ -76,7 +75,7 @@ public class Screen extends Model {
 		if (start < 0)
 			start = 0;
 		for (int i = start; i < end; i++) {
-			grid[i][ypos].textureid = pixel.textureid;
+			grid[i][ypos] = pixel;
 		}
 	}
 
@@ -86,7 +85,7 @@ public class Screen extends Model {
 		if (start < 0)
 			start = 0;
 		for (int i = start; i < end; i++) {
-			grid[xpos][i].textureid = pixel.textureid;
+			grid[xpos][i] = pixel;
 		}
 	}
 
@@ -102,10 +101,15 @@ public class Screen extends Model {
 
 		for (int i = 0; i < grid.length; i++) {
 			for (int j = 0; j < grid[1].length; j++) {
-				int val = grid[i][j].textureid;
-				addBoxWithTextureId(tessellator, i, j, val);
+				if (grid[i][j] != null) {
+					int val = grid[i][j].textureid;
+					Vector color = grid[i][j].color;
+					tessellator.setColorOpaque_F(color.x, color.y, color.z);
+					addBoxWithTextureId(tessellator, i, j, val);
+				}
 			}
 		}
+		
 		tessellator.draw();
 	}
 
@@ -121,9 +125,10 @@ public class Screen extends Model {
 		tess.addVertexWithUV(-x * sw - sw, -y * sh, 0, tex + ts, tey + ts);
 	}
 
-	private class Pixel {
+	class Pixel {
 		Vector localOffset;
 		int textureid;
+		Vector color;
 		boolean falling;
 
 		public Pixel(Vector localOffset, int textureid, boolean falling) {

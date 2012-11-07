@@ -47,9 +47,9 @@ public class RenderGameTile extends TileEntitySpecialRenderer {
 		super.setTileEntityRenderer(tileEntityRenderer);
 	}
 
-	public void renderTile(TileEntity tileEntity, double x, double y, double z, float time) {
+	public void renderTile(TileGameMachine tt, double x, double y, double z, float time) {
 
-		TileGameMachine tt = (TileGameMachine) tileEntity;
+		tt.renderUpdate(time);
 		Screen gb = tt.getGamescreen();
 		RenderBlocks br = new RenderBlocks(tt.worldObj);
 
@@ -87,6 +87,6 @@ public class RenderGameTile extends TileEntitySpecialRenderer {
 	}
 
 	public void renderTileEntityAt(TileEntity tileEntity, double par2, double par4, double par6, float par8) {
-		renderTile(tileEntity, par2, par4, par6, par8);
+		renderTile((TileGameMachine)tileEntity, par2, par4, par6, par8);
 	}
 }

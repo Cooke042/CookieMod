@@ -54,7 +54,7 @@ public class BaseCookieMod {
 	public static BaseCookieMod instance; // This is the object reference to your class that Forge uses.
 
 	// -------------Blocks--------------
-	public static final Block blockEntertainment = new BaseGameBlock(500, 5)
+	public static final Block blockEntertainment = new BlockBaseGame(500, 5)
 				.setHardness(0.5F)
 				.setStepSound(Block.soundStoneFootstep)
 				.setBlockName("Entertainment Block")

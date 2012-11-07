@@ -51,14 +51,13 @@ import cpw.mods.fml.common.Side;
 import cpw.mods.fml.common.asm.SideOnly;
 import cpw.mods.fml.common.registry.GameRegistry;
 
-public class BaseGameBlock extends BlockContainer {
+public class BlockBaseGame extends BlockContainer {
 	public static Class tileEnt;
 
-	protected BaseGameBlock(int par1, int par2) {
+	protected BlockBaseGame(int par1, int par2) {
 		super(par1, 7, Material.rock);
 		tileEnt = TileGameMachine.class;
 	}
-
 	@Override
 	public String getTextureFile() {
 		return CommonProxy.BLOCK_PNG;
