@@ -47,11 +47,11 @@ public class RenderGameTile extends TileEntitySpecialRenderer {
 		super.setTileEntityRenderer(tileEntityRenderer);
 	}
 
-	public void renderTile(TileGameMachine tt, double x, double y, double z, float time) {
+	public void renderTile(TileGameMachine tile, double x, double y, double z, float time) {
 
-		tt.renderUpdate(time);
-		Screen gb = tt.getGamescreen();
-		RenderBlocks br = new RenderBlocks(tt.worldObj);
+		tile.renderUpdate(time);
+		Screen gb = tile.getGamescreen();
+		RenderBlocks br = new RenderBlocks(tile.worldObj);
 
 		glPushMatrix();
 
@@ -59,13 +59,13 @@ public class RenderGameTile extends TileEntitySpecialRenderer {
 
 		glTranslatef((float) x + .5f, (float) y, (float) z + .5f);
 
-		glRotatef(((TileGameMachine) tileEntity).facingDir * -90f, 0, 1, 0); // set facing dir
+		glRotatef(tile.facingDir * -90f, 0, 1, 0); // set facing dir
 		
 		bindTextureByName(CommonProxy.BLOCK_PNG);
 
 		// ---draw Model---
 		glPolygonMode(GL_FRONT, GL_FILL);
-		Model.drawModelById(tt.getModelid(), tessellator);
+		Model.drawModelById(tile.getModelid(), tessellator);
 
 		// ---Draw Screen---
 		glPushMatrix();
@@ -75,12 +75,12 @@ public class RenderGameTile extends TileEntitySpecialRenderer {
 
 		// ---Draw Wire-frame---
 		// used for the highlight effect
-		if (tt.drawWire) {
+		if (tile.drawWire) {
 			glColor3f(0, 0, 0);
 			glPolygonMode(GL_FRONT, GL_LINE);
-			Model.drawModelById(tt.getModelid(), tessellator);
+			Model.drawModelById(tile.getModelid(), tessellator);
 			glPolygonMode(GL_FRONT, GL_FILL);
-			tt.drawWire = false;
+			tile.drawWire = false;
 		}
 
 		glPopMatrix();

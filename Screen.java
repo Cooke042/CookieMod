@@ -14,7 +14,8 @@ public class Screen extends Model {
 
 	float x, y, z; // screen Position vector relative to origin
 	private Pixel[][] grid; // Pixel array
-	float sw, sh; // Pixel size width, height
+	public int sWidth, sHeight;
+	private float pixelWidth, pixelHeight; // Pixel size width, height
 	public static int black = 24;
 	Pixel borderPixel;
 
@@ -22,16 +23,39 @@ public class Screen extends Model {
 		grid = new Pixel[sizex][sizey];
 		setPixelAspect(sizex*.0625f, sizey*.0625f);//defailt 1:1 at pixel scale
 		clearScreen();
-		borderPixel = new Pixel(8);
+		borderPixel = new Pixel(10+16);
+		
+		
 		for (int i = 0; i < 4; i++) {
 
-			drawVLine(borderPixel, i*5, 5, 20);
-			drawHLine(borderPixel, i*5, 5, 20);
+			setRegion(borderPixel, 5, 5, grid.length-5, grid[0].length-5);
+			
+//			drawVLine(borderPixel, i*5, 5, 20);
+//			drawHLine(borderPixel, i*5, 5, 20);
 		}
 	}
 
 	public Pixel getPixel(int x, int y) {
 		return grid[x][y];
+	}
+
+	public void drawArray(Tessellator tessellator, float time) {
+	
+		tessellator.startDrawingQuads();
+		tessellator.setNormal(0, 0, -1);
+	
+		for (int i = 0; i < grid.length; i++) {
+			for (int j = 0; j < grid[1].length; j++) {
+				if (grid[i][j] != null) {
+					int val = grid[i][j].textureid;
+					Vector color = grid[i][j].color;
+					tessellator.setColorOpaque_F(color.x, color.y, color.z);
+					addBoxWithTextureId(tessellator, i, j, val);
+				}
+			}
+		}
+		
+		tessellator.draw();
 	}
 
 	public void clearScreen() {
@@ -43,9 +67,9 @@ public class Screen extends Model {
 		}
 	}
 	
-	public void setPixelAspect(float width, float height){
-		sw = width /(float) grid.length;
-		sh = height /(float) grid[0].length;
+	public void setPixelAspect(float screenwidth, float screenheight){
+		pixelWidth = screenwidth /(float) grid.length;
+		pixelHeight = screenheight /(float) grid[0].length;
 	}
 
 	public void setRegion(Pixel pixel, int stx, int sty, int enx, int eny) {
@@ -69,7 +93,7 @@ public class Screen extends Model {
 		}
 	}
 
-	public void drawHLine(Pixel pixel, int ypos, int start, int end) {
+	public void setHLine(Pixel pixel, int ypos, int start, int end) {
 		if (grid[ypos].length < end)
 			end = grid[ypos].length;
 		if (start < 0)
@@ -79,7 +103,7 @@ public class Screen extends Model {
 		}
 	}
 
-	public void drawVLine(Pixel pixel, int xpos, int start, int end) {
+	public void setVLine(Pixel pixel, int xpos, int start, int end) {
 		if (grid.length < end)
 			end = grid.length;
 		if (start < 0)
@@ -94,53 +118,37 @@ public class Screen extends Model {
 		return true;
 	}
 
-	public void drawArray(Tessellator tessellator, float time) {
-
-		tessellator.startDrawingQuads();
-		tessellator.setNormal(0, 0, -1);
-
-		for (int i = 0; i < grid.length; i++) {
-			for (int j = 0; j < grid[1].length; j++) {
-				if (grid[i][j] != null) {
-					int val = grid[i][j].textureid;
-					Vector color = grid[i][j].color;
-					tessellator.setColorOpaque_F(color.x, color.y, color.z);
-					addBoxWithTextureId(tessellator, i, j, val);
-				}
-			}
-		}
-		
-		tessellator.draw();
-	}
-
 	float ts = .0625f;
 
 	public void addBoxWithTextureId(Tessellator tess, int x, int y, int id) {
 		float tex = ts * (id % 16);
 		float tey = ts * (id / 16);
 
-		tess.addVertexWithUV(-x * sw, -y * sh, 0, tex, tey + ts);
-		tess.addVertexWithUV(-x * sw, -y * sh - sh, 0, tex, tey);
-		tess.addVertexWithUV(-x * sw - sw, -y * sh - sh, 0, tex + ts, tey);
-		tess.addVertexWithUV(-x * sw - sw, -y * sh, 0, tex + ts, tey + ts);
+		tess.addVertexWithUV(-x * pixelWidth, -y * pixelHeight, 0, tex, tey + ts);
+		tess.addVertexWithUV(-x * pixelWidth, -y * pixelHeight - pixelHeight, 0, tex, tey);
+		tess.addVertexWithUV(-x * pixelWidth - pixelWidth, -y * pixelHeight - pixelHeight, 0, tex + ts, tey);
+		tess.addVertexWithUV(-x * pixelWidth - pixelWidth, -y * pixelHeight, 0, tex + ts, tey + ts);
 	}
 
 	class Pixel {
 		Vector localOffset;
+		float fallspeed;
 		int textureid;
 		Vector color;
 		boolean falling;
-
-		public Pixel(Vector localOffset, int textureid, boolean falling) {
+ 
+		
+		public Pixel(Vector localOffset, int textureid, Vector color) {
 			this.localOffset = localOffset;
 			this.textureid = textureid;
-			this.falling = falling;
+			this.color = color;
+			this.falling = false;
+			fallspeed = 0f;
 		}
 
 		public Pixel(int textureid) {
-			this.localOffset = Vector.zero();
-			this.textureid = textureid;
-			this.falling = false;
+			this(Vector.zero(),textureid,Vector.one());
 		}
+		
 	}
 }

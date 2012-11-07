@@ -299,9 +299,11 @@ class Face {
 
 	@Override
 	public String toString() {
-		// String string = new String("face verts= " + verts[0] +", "+ verts[1]
-		// + ", "+ verts[2] + ", " + verts[3]);
-		return "fix me later";
+		String string = num + "vert face:";
+		for (int i = 0; i < vData.length; i++) {
+			string += ( " " + vData[i].a + "/" + vData[i].b + "/" + vData[i].c);
+		}
+		return string;
 	}
 }
 
@@ -356,6 +358,10 @@ class Vector {
 	@Override
 	public String toString() {
 		return new String(x + ", " + y + ", " + z);
+	}
+
+	public static Vector one() {
+		return new Vector(1, 1, 1);		
 	}
 }
 

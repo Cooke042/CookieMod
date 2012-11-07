@@ -83,7 +83,11 @@ public class BaseCookieMod {
 		
 		LanguageRegistry.addName(blockEntertainment, "Nintendo!");
 
+		//Event
 		MinecraftForge.EVENT_BUS.register(blockEntertainment);
+		
+		//------------Tick Handelers----------		
+		//TickRegistry.registerTickHandler(new TileGameMachine(), Side.CLIENT);
 
 		//RenderingRegistry.registerEntityRenderingHandler(entityClass, renderer)(renderId, new renderFurniture());
 		// ------------Items----------

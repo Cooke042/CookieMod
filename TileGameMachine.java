@@ -17,7 +17,7 @@ import net.minecraft.src.TileEntity;
 import net.minecraft.src.TileEntitySpecialRenderer;
 import net.minecraftforge.client.IItemRenderer;
 
-public class TileGameMachine extends TileEntity implements ITickHandler{
+public class TileGameMachine extends TileEntity{
 
 	// general params
 	private int modelid;
@@ -39,8 +39,9 @@ public class TileGameMachine extends TileEntity implements ITickHandler{
 		{
 			this.modelid = modelid;
 			Model model = Model.models.get(modelid);
+			//if the model has a screen, initialize it
 			if (model != null && model.hasScreen()) {
-				gamescreen = new Screen(40, 32);
+				gamescreen = new Screen(40, 32); //set numer of pixels the grid will have;
 				gamescreen.setPixelAspect(model.screenwidth, model.screenheight);
 			}
 
@@ -101,30 +102,32 @@ public class TileGameMachine extends TileEntity implements ITickHandler{
 		return modelid;
 	}
 
-	@Override
-	public void tickStart(EnumSet<TickType> type, Object... tickData) {
-		float time = (Float)tickData[0];
-		System.out.println(time);
-		
-		
-	}
-
-	@Override
-	public void tickEnd(EnumSet<TickType> type, Object... tickData) {	
-		//float time = (Float)tickData[0];
-	}
-
-	@Override
-	public EnumSet<TickType> ticks() {
-		return EnumSet.of(TickType.RENDER);
-	}
-
-	@Override
-	public String getLabel() {
-		return null;
-	}
-
+	double tril = 1000000000.0;
+	private float rate = 1.0f/20f;
+	double lastTime = 0;
+	double thisTime = System.nanoTime()/tril;
+	double lastSystemTime= thisTime;
 	public void renderUpdate(float time) {
-		gamescreen.borderPixel.color.x += 
+		
+//		//tickrate timer
+//		thisTime = System.nanoTime()/tril;
+//		double diffSec = thisTime-lastSystemTime;
+//		if (diffSec > 1.0f){
+//			System.out.println(diffSec + " sec/tick");
+//			lastSystemTime = thisTime+(diffSec-1);
+//		}
+		
+		
+		if (lastTime>time);
+			lastTime-=1;
+		float dt = (float)(time-lastTime);
+		float col = gamescreen.borderPixel.color.x;
+		if (col + dt/20f>1f)
+			gamescreen.borderPixel.color = Vector.zero();
+		gamescreen.borderPixel.color.x += dt*rate;
+		gamescreen.borderPixel.color.y += dt*rate;
+		gamescreen.borderPixel.color.z += dt*rate;
+		
+		lastTime = time;
 	}
 }
